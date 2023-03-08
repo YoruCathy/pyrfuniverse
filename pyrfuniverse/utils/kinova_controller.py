@@ -16,7 +16,7 @@ class RFUniverseKinovaController:
 
     def __init__(
             self, robot_urdf, base_pos=np.array([0, 0, 0]),
-            base_orn=[-0.707107, 0.0, 0.0, 0.707107], init_joint_positions=[0] * 7,
+            base_orn=[-0.707107, -0.707107, -0.707107, 0.707107], init_joint_positions=[0] * 7,
             render=False
     ):
     
