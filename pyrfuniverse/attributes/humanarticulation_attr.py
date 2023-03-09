@@ -7,6 +7,21 @@ import pyrfuniverse.utils.rfuniverse_utility as utility
 
 def parse_message(msg: IncomingMessage) -> dict:
     this_object_data = attr.base_attr.parse_message(msg)
+    count = msg.read_int32()
+    for _ in range(count):
+        name = msg.read_string()
+        this_object_data[name] = {}
+        this_object_data[name]['position'] = [msg.read_float32() for _ in range(3)]
+        this_object_data[name]['rotation'] = [msg.read_float32() for _ in range(3)]
+        this_object_data[name]['quaternion'] = [msg.read_float32() for _ in range(4)]
+        this_object_data[name]['local_rotation'] = [msg.read_float32() for _ in range(3)]
+        this_object_data[name]['local_quaternion'] = [msg.read_float32() for _ in range(4)]
+        this_object_data[name]['velocity'] = [msg.read_float32() for _ in range(3)]
+
+        this_object_data[name]['joint_position'] = [msg.read_float32()]
+        this_object_data[name]['joint_velocity'] = [msg.read_float32()]
+        this_object_data[name]['joint_acceleration'] = [msg.read_float32()]
+        this_object_data[name]['joint_force'] = [msg.read_float32()]
     return this_object_data
 
 # bone name list:
@@ -68,21 +83,27 @@ def parse_message(msg: IncomingMessage) -> dict:
 
 def SetNameBonePosition(kwargs: dict) -> OutgoingMessage:
     compulsory_params = ['id', 'bone_name', 'bone_position']
-    optional_params = []
+    optional_params = ['bone_position_y', 'bone_position_z']
     utility.CheckKwargs(kwargs, compulsory_params)
-
+    print(kwargs)
     msg = OutgoingMessage()
 
     msg.write_int32(kwargs['id'])
     msg.write_string('SetNameBonePosition')
     msg.write_string(kwargs['bone_name'])
     msg.write_float32(kwargs['bone_position'])
+    msg.write_bool('bone_position_y' in kwargs)
+    if 'bone_position_y' in kwargs:
+        msg.write_float32(kwargs['bone_position_y'])
+    msg.write_bool('bone_position_z' in kwargs)
+    if 'bone_position_z' in kwargs:
+        msg.write_float32(kwargs['bone_position_z'])
 
     return msg
 
 def SetNameBonePositionDirectly(kwargs: dict) -> OutgoingMessage:
     compulsory_params = ['id', 'bone_name', 'bone_position']
-    optional_params = []
+    optional_params = ['bone_position_y', 'bone_position_z']
     utility.CheckKwargs(kwargs, compulsory_params)
 
     msg = OutgoingMessage()
@@ -91,6 +112,12 @@ def SetNameBonePositionDirectly(kwargs: dict) -> OutgoingMessage:
     msg.write_string('SetNameBonePositionDirectly')
     msg.write_string(kwargs['bone_name'])
     msg.write_float32(kwargs['bone_position'])
+    msg.write_bool('bone_position_y' in kwargs)
+    if 'bone_position_y' in kwargs:
+        msg.write_float32(kwargs['bone_position_y'])
+    msg.write_bool('bone_position_z' in kwargs)
+    if 'bone_position_z' in kwargs:
+        msg.write_float32(kwargs['bone_position_z'])
 
     return msg
 
